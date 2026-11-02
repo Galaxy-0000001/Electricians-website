@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- These %BIZ_...% placeholders are filled in from src/config at build time (see vite.config.js). -->
+    <title>%BIZ_TITLE%</title>
+    <meta name="description" content="%BIZ_DESCRIPTION%" />
+    <meta name="keywords" content="%BIZ_KEYWORDS%" />
+    <meta name="theme-color" content="%BIZ_THEME%" />
+    <link rel="canonical" href="%BIZ_URL%" />
+    <link rel="icon" type="image/svg+xml" href="%BIZ_FAVICON%" />
+
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn link previews) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="%BIZ_NAME%" />
+    <meta property="og:title" content="%BIZ_TITLE%" />
+    <meta property="og:description" content="%BIZ_DESCRIPTION%" />
+    <meta property="og:url" content="%BIZ_URL%" />
+    <meta property="og:image" content="%BIZ_OG_IMAGE%" />
+    <meta property="og:locale" content="%BIZ_LOCALE%" />
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="%BIZ_TITLE%" />
+    <meta name="twitter:description" content="%BIZ_DESCRIPTION%" />
+    <meta name="twitter:image" content="%BIZ_OG_IMAGE%" />
+
+    <!-- Google Fonts: Sora (headings) + DM Sans (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <noscript>Please enable JavaScript to view this website.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

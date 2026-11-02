@@ -1,0 +1,11 @@
+# Netlify settings (picked up automatically when you connect the GitHub repo)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# React Router fallback: send every unknown URL to index.html
+# so direct links like /services or /contact work after deployment.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

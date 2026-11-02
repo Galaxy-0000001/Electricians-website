@@ -1,0 +1,886 @@
+/* ==========================================================================
+   ANIMATION SYSTEM
+   1. Motion tokens          6. Section details
+   2. Keyframes              7. Interactions (buttons, cards, gallery, ...)
+   3. Entrance utilities     8. Lightbox, slider, page transitions
+   4. Scroll reveal          9. Footer & floating buttons
+   5. Hero & navbar         10. Reduced motion
+   Rules of thumb: animate only transform, opacity and clip-path; keep
+   delays short; everything switches off with prefers-reduced-motion.
+   ========================================================================== */
+
+/* ---------- 1. Motion tokens ---------- */
+:root {
+  --dur-fast: 200ms;
+  --dur-base: 450ms;
+  --dur-slow: 800ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0);
+  --distance: 28px;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --distance: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ---------- 2. Keyframes ---------- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--distance), 0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes word-up {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+}
+
+@keyframes wipe-up {
+  from {
+    clip-path: inset(100% 0 0 0 round 28px);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 28px);
+  }
+}
+
+@keyframes image-settle {
+  from {
+    transform: scale(1.18);
+  }
+}
+
+@keyframes marker {
+  from {
+    background-size: 0% 0.28em;
+  }
+  to {
+    background-size: 100% 0.28em;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.95);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+@keyframes float-alt {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-6px, 10px, 0) rotate(8deg);
+  }
+}
+
+@keyframes drift-a {
+  to {
+    transform: translate3d(-80px, 60px, 0) scale(1.1);
+  }
+}
+
+@keyframes drift-b {
+  to {
+    transform: translate3d(90px, -50px, 0) scale(0.92);
+  }
+}
+
+@keyframes grid-pan {
+  to {
+    transform: translate3d(56px, 56px, 0);
+  }
+}
+
+@keyframes nav-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes menu-item {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ring {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20%,
+  60% {
+    transform: rotate(-14deg);
+  }
+  40%,
+  80% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.45);
+  }
+  80%,
+  100% {
+    box-shadow: 0 0 0 16px rgba(37, 211, 102, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lb-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes lb-zoom-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--from-x, 0px), var(--from-y, 0px), 0) scale(var(--from-scale, 0.9));
+  }
+}
+
+@keyframes lb-zoom-out {
+  to {
+    opacity: 0;
+    transform: translate3d(var(--from-x, 0px), var(--from-y, 0px), 0) scale(var(--from-scale, 0.9));
+  }
+}
+
+@keyframes lb-swap {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* ---------- 3. Entrance utilities (play once on page load) ----------
+   Stagger with style="--delay: 120ms". */
+.animate-in {
+  animation: fade-up var(--dur-slow) var(--ease-out) var(--delay, 0ms) both;
+}
+
+.animate-pop {
+  animation: pop-in 0.6s var(--ease-out) var(--delay, 0ms) both;
+}
+
+.animate-wipe {
+  animation: wipe-up 1.1s var(--ease-out) var(--delay, 0ms) both;
+}
+
+.animate-wipe img {
+  animation: image-settle 1.6s var(--ease-out) var(--delay, 0ms) both;
+}
+
+/* Word-by-word headings (AnimatedHeading.jsx) */
+.split-heading__word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* room for descenders (g, y, p) inside the mask */
+  padding: 0.04em 0 0.14em;
+  margin: -0.04em 0 -0.14em;
+}
+
+.split-heading__inner {
+  display: inline-block;
+  animation: word-up 0.9s var(--ease-out) var(--word-delay, 0ms) both;
+}
+
+/* ---------- 4. Scroll reveal ([data-reveal] set by Reveal.jsx) ---------- */
+[data-reveal] {
+  transition:
+    opacity var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms),
+    transform var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms),
+    clip-path 1s var(--ease-out) var(--reveal-delay, 0ms),
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease;
+}
+
+[data-reveal='up'] {
+  opacity: 0;
+  transform: translate3d(0, var(--distance), 0);
+}
+
+[data-reveal='left'] {
+  opacity: 0;
+  transform: translate3d(calc(var(--distance) * -1.6), 0, 0);
+}
+
+[data-reveal='right'] {
+  opacity: 0;
+  transform: translate3d(calc(var(--distance) * 1.6), 0, 0);
+}
+
+[data-reveal='scale'] {
+  opacity: 0;
+  transform: scale(0.94);
+}
+
+[data-reveal='fade'] {
+  opacity: 0;
+}
+
+/* Image wipe: the content unclips from the bottom up while settling from a slight zoom.
+   The clip goes on the CHILD, never on the observed element itself: browsers report a
+   fully clipped element as "not intersecting", so it would never be revealed. */
+[data-reveal='image'] {
+  overflow: hidden;
+}
+
+[data-reveal='image'] > * {
+  clip-path: inset(100% 0 0 0);
+  transform: scale(1.18);
+  transition:
+    clip-path 1s var(--ease-out) var(--reveal-delay, 0ms),
+    transform 1.4s var(--ease-out) var(--reveal-delay, 0ms);
+}
+
+[data-reveal][data-inview] {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal='image'][data-inview] > * {
+  clip-path: inset(0 0 0 0);
+  transform: none;
+}
+
+/* Section headings: eyebrow line draws in, then each line slides up in turn */
+[data-reveal='heading'] > * {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+}
+
+[data-reveal='heading'] > :nth-child(2) {
+  transition-delay: 90ms;
+}
+
+[data-reveal='heading'] > :nth-child(3) {
+  transition-delay: 180ms;
+}
+
+[data-reveal='heading'][data-inview] > * {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal='heading'] .eyebrow::before {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease-out) 0.2s;
+}
+
+[data-reveal='heading'][data-inview] .eyebrow::before {
+  transform: none;
+}
+
+/* ---------- 5. Hero & navbar ---------- */
+.hero__pattern::before {
+  will-change: transform;
+  animation: grid-pan 26s linear infinite;
+}
+
+.hero__glow {
+  will-change: transform;
+}
+
+.hero__glow--1 {
+  animation: drift-a 18s ease-in-out infinite alternate;
+}
+
+.hero__glow--2 {
+  animation: drift-b 22s ease-in-out infinite alternate;
+}
+
+.hero__highlight {
+  background-size: 0% 0.28em;
+  animation:
+    word-up 0.9s var(--ease-out) var(--word-delay, 0ms) both,
+    marker 0.7s var(--ease-out) calc(var(--word-delay, 0ms) + 550ms) forwards;
+}
+
+.hero__deco--dots {
+  animation:
+    fade-in 1s ease 0.9s both,
+    float 9s ease-in-out 1.9s infinite;
+}
+
+.hero__deco--ring {
+  animation:
+    pop-in 0.8s var(--ease-out) 1.1s both,
+    float-alt 8s ease-in-out 1.9s infinite;
+}
+
+.hero__card {
+  animation:
+    card-in var(--dur-slow) var(--ease-out) var(--delay, 0ms) both,
+    float 6.5s ease-in-out calc(var(--delay, 0ms) + 800ms) infinite;
+}
+
+.hero__card--2 {
+  animation-duration: var(--dur-slow), 7.5s;
+}
+
+.navbar {
+  animation: nav-in var(--dur-slow) var(--ease-out) both;
+}
+
+/* Hover underline grows from the left; the active page uses the gliding indicator instead */
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.25rem;
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-primary) 55%, transparent);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.navbar__link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+.navbar__link.active::after {
+  display: none;
+}
+
+.navbar__indicator.is-ready {
+  transition:
+    transform 0.55s var(--ease-out),
+    opacity var(--dur-fast) ease;
+}
+
+.navbar__phone-icon {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.navbar__phone:hover .navbar__phone-icon {
+  animation: ring 0.6s ease-in-out;
+}
+
+.hamburger span {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    opacity var(--dur-fast) ease;
+}
+
+.navbar--open .hamburger span:nth-child(1) {
+  transform: translate3d(0, 6px, 0) rotate(45deg);
+}
+
+.navbar--open .hamburger span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0.2);
+}
+
+.navbar--open .hamburger span:nth-child(3) {
+  transform: translate3d(0, -6px, 0) rotate(-45deg);
+}
+
+@media (max-width: 900px) {
+  .navbar--open .navbar__links li,
+  .navbar--open .navbar__mobile-cta {
+    animation: menu-item var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 50ms + 80ms);
+  }
+}
+
+/* ---------- 6. Section details ---------- */
+.process__step::before {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1s var(--ease-out) calc(var(--reveal-delay, 0ms) + 250ms);
+}
+
+.process__step[data-inview]::before {
+  transform: none;
+}
+
+.why-card__icon,
+.value-card__icon,
+.contact-card__icon,
+.trust__icon {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) ease,
+    color var(--dur-base) ease;
+}
+
+.why-card:hover .why-card__icon,
+.value-card:hover .value-card__icon {
+  transform: translate3d(0, -4px, 0) rotate(-8deg);
+}
+
+a.contact-card:hover .contact-card__icon {
+  transform: scale(1.08);
+}
+
+.cta__ring--1 {
+  animation: drift-a 16s ease-in-out infinite alternate;
+}
+
+.cta__ring--2 {
+  animation: drift-b 20s ease-in-out infinite alternate;
+}
+
+/* ---------- 7. Interactions ---------- */
+
+/* Buttons: lift + tiny scale on hover, press on click, arrows nudge forward */
+.btn {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.btn:hover {
+  transform: translate3d(0, -2px, 0) scale(1.02);
+}
+
+.btn:active {
+  transform: scale(0.98);
+  transition-duration: 80ms;
+}
+
+.btn:disabled:hover {
+  transform: none;
+}
+
+.btn .lucide-arrow-right,
+.btn .lucide-arrow-left,
+.btn__arrow {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.btn:hover .lucide-arrow-right,
+.btn:hover .btn__arrow {
+  transform: translate3d(4px, 0, 0);
+}
+
+.btn:hover .lucide-arrow-left {
+  transform: translate3d(-4px, 0, 0);
+}
+
+.btn--primary:hover {
+  box-shadow: 0 16px 30px -14px color-mix(in srgb, var(--color-primary) 90%, transparent);
+}
+
+.btn:hover .btn__ring-icon {
+  animation: ring 0.6s ease-in-out;
+}
+
+/* Light sweep across the main call-to-action */
+.btn--shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn--shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.45) 50%, transparent 65%);
+  transform: translate3d(-120%, 0, 0);
+  transition: transform 0.8s var(--ease-out);
+}
+
+.btn--shine:hover::after {
+  transform: translate3d(120%, 0, 0);
+}
+
+/* Service cards: lift, soft shadow fade-in (cheaper than animating box-shadow),
+   icon tilt, arrow nudge and a mouse-following spotlight on desktop. */
+.service-card {
+  isolation: isolate;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) ease;
+}
+
+.service-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  box-shadow: 0 30px 60px -28px rgba(16, 24, 40, 0.35);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.service-card:hover {
+  transform: translate3d(0, -6px, 0) scale(1.015);
+  box-shadow: none;
+}
+
+.service-card:hover::after {
+  opacity: 1;
+}
+
+.service-card__icon {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) ease,
+    color var(--dur-base) ease;
+}
+
+.service-card:hover .service-card__icon {
+  transform: translate3d(0, -3px, 0) rotate(-8deg);
+}
+
+.service-card__link svg {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.service-card:hover .service-card__link svg {
+  transform: translate3d(2px, -2px, 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      360px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+      color-mix(in srgb, var(--color-primary) 14%, transparent),
+      transparent 65%
+    );
+    opacity: 0;
+    transition: opacity var(--dur-base) ease;
+    pointer-events: none;
+  }
+
+  .service-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Gallery */
+.gallery__image {
+  transition: transform 0.9s var(--ease-out);
+}
+
+.gallery__button:hover .gallery__image,
+.gallery__button:focus-visible .gallery__image {
+  transform: scale(1.07);
+}
+
+/* The revealed tile clips its overflow, so draw the focus ring inside the tile */
+.gallery__button:focus-visible {
+  outline-offset: -4px;
+}
+
+.gallery__zoom {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(0.6) rotate(-30deg);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.gallery__button:hover .gallery__zoom,
+.gallery__button:focus-visible .gallery__zoom {
+  transform: none;
+}
+
+.chip {
+  transition:
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+.faq__item summary {
+  transition: background-color var(--dur-fast) ease;
+}
+
+.faq__item summary:hover {
+  background: var(--color-bg-alt);
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* ---------- 8. Lightbox, slider, page transitions ---------- */
+.lightbox {
+  animation: fade-in var(--dur-base) ease both;
+}
+
+.lightbox__stage {
+  animation: lb-zoom-in 0.55s var(--ease-out) both;
+}
+
+.lightbox.is-closing {
+  animation: lb-fade-out 340ms ease both;
+}
+
+.lightbox.is-closing .lightbox__stage {
+  animation: lb-zoom-out 340ms var(--ease-in) both;
+}
+
+.lightbox__figure.is-swapping {
+  animation: lb-swap var(--dur-base) var(--ease-out) both;
+}
+
+.lightbox__close,
+.lightbox__nav {
+  animation: fade-in var(--dur-base) ease 0.15s both;
+  transition: background-color var(--dur-fast) ease;
+}
+
+.slide {
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 0.7s var(--ease-out),
+    visibility 0s linear 0.7s;
+}
+
+.slide.is-before,
+.slide.is-after {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.slide.is-before {
+  transform: translate3d(-40px, 0, 0) scale(0.98);
+}
+
+.slide.is-after {
+  transform: translate3d(40px, 0, 0) scale(0.98);
+}
+
+.slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.slider__arrow,
+.slider__pause {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+}
+
+.slider__arrow:hover,
+.slider__pause:hover {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: #fff;
+  transform: translate3d(0, -2px, 0);
+}
+
+.slider__dot::before {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    background-color var(--dur-fast) ease;
+}
+
+.slider__dot.is-active::before {
+  transform: scaleX(2.2);
+}
+
+.slider__progress-bar {
+  animation-name: progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+/* Enter-only page transition (PageTransition.jsx). Ends with no transform left behind. */
+.page-transition {
+  animation: page-enter 0.5s var(--ease-out) both;
+}
+
+/* ---------- 9. Footer & floating buttons ---------- */
+.footer__social a {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+}
+
+.footer__social a:hover {
+  transform: translate3d(0, -3px, 0);
+}
+
+/* Underline that draws in from the left */
+.footer__link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition:
+    background-size var(--dur-base) var(--ease-out),
+    color var(--dur-fast) ease;
+}
+
+.footer a.footer__link:hover {
+  background-size: 100% 1px;
+  text-decoration: none;
+}
+
+.whatsapp-float {
+  transition: transform var(--dur-base) var(--ease-out);
+  animation: pulse-ring 2.6s ease-out 2.5s 3;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.08);
+}
+
+.whatsapp-float__tooltip {
+  transition:
+    opacity var(--dur-fast) ease,
+    transform var(--dur-base) var(--ease-out);
+}
+
+.whatsapp-float:hover .whatsapp-float__tooltip,
+.whatsapp-float:focus-visible .whatsapp-float__tooltip {
+  opacity: 1;
+  transform: none;
+}
+
+.back-to-top {
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    visibility var(--dur-base),
+    background-color var(--dur-fast) ease,
+    color var(--dur-fast) ease;
+}
+
+.back-to-top:hover {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.back-to-top__arrow {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.back-to-top:hover .back-to-top__arrow {
+  transform: translate3d(0, -3px, 0);
+}
+
+/* ---------- 10. Reduced motion ----------
+   Visitors who turn on "reduce motion" get the finished state straight away:
+   no entrances, no drifting, no slides. Colours and focus rings still change. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-reveal],
+  [data-reveal] > *,
+  [data-reveal] .eyebrow::before,
+  .process__step::before {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
+  .btn:hover,
+  .service-card:hover,
+  .whatsapp-float:hover {
+    transform: none;
+  }
+}
